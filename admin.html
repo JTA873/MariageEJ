@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Confirmations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #764ba2;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .controls h2 {
+            color: #764ba2;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-container h2 {
+            color: #764ba2;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .guest-list {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .message-cell {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .date-cell {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .delete-btn:hover {
+            background: #c82333;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .table-container {
+                padding: 20px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .guest-list,
+            .message-cell {
+                max-width: 120px;
+            }
+        }
+
+        /* Modal pour confirmation de suppression */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Administration</h1>
+            <p>Gestion des confirmations d'événement</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalConfirmations">-</div>
+                <div class="stat-label">Confirmations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalGuests">-</div>
+                <div class="stat-label">Total invités</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayConfirmations">-</div>
+                <div class="stat-label">Aujourd'hui</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <h2>Actions</h2>
+            <div class="button-group">
+                <button class="btn-primary" onclick="refreshData()">🔄 Actualiser</button>
+                <button class="btn-success" onclick="exportData()">📊 Exporter CSV</button>
+                <button class="btn-secondary" onclick="addTestData()">🧪 Données de test</button>
+                <button class="btn-danger" onclick="confirmClearAll()">🗑️ Tout supprimer</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h2>Liste des confirmations</h2>
+            <div id="tableContent">
+                <div class="loading"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirmer la suppression</h3>
+            <p id="confirmMessage"></p>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeConfirmModal()">Annuler</button>
+                <button class="btn-danger" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let confirmations = [];
+        let currentDeleteId = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+        });
+
+        // Charger les données
+        async function loadData() {
+            try {
+                // Simuler un appel Firebase ou récupérer depuis localStorage
+                const stored = localStorage.getItem('confirmations');
+                if (stored) {
+                    confirmations = JSON.parse(stored);
+                } else {
+                    confirmations = [];
+                }
+                
+                updateStats();
+                renderTable();
+            } catch (error) {
+                console.error('Erreur lors du chargement:', error);
+                document.getElementById('tableContent').innerHTML = 
+                    '<div class="empty-state"><p>Erreur lors du chargement des données</p></div>';
+            }
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const today = new Date().toDateString();
+            const todayCount = confirmations.filter(conf => 
+                new Date(conf.dateConfirmation).toDateString() === today
+            ).length;
+            const totalGuests = confirmations.reduce((sum, conf) => sum + conf.nbInvites, 0);
+
+            document.getElementById('totalConfirmations').textContent = confirmations.length;
+            document.getElementById('totalGuests').textContent = totalGuests;
+            document.getElementById('todayConfirmations').textContent = todayCount;
+        }
+
+        // Afficher le tableau
+        function renderTable() {
+            const tableContent = document.getElementById('tableContent');
+            
+            if (confirmations.length === 0) {
+                tableContent.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">📭</div>
+                        <h3>Aucune confirmation</h3>
+                        <p>Les confirmations apparaîtront ici une fois reçues.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const sortedConfirmations = confirmations.sort((a, b) => b.timestamp - a.timestamp);
+
+            const tableHTML = `
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Nb invités</th>
+                                <th>Liste invités</th>
+                                <th>Message</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sortedConfirmations.map(conf => `
+                                <tr>
+                                    <td class="date-cell">
+                                        ${new Date(conf.dateConfirmation).toLocaleDateString('fr-FR')}<br>
+                                        <small>${new Date(conf.dateConfirmation).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</small>
+                                    </td>
+                                    <td><strong>${conf.nom}</strong></td>
+                                    <td>${conf.prenom}</td>
+                                    <td style="text-align: center;">${conf.nbInvites}</td>
+                                    <td class="guest-list" title="${conf.invites.map(inv => inv.prenom + ' ' + inv.nom).join(', ')}">
+                                        ${conf.invites.map(inv => inv.prenom + ' ' + inv.nom).join(', ')}
+                                    </td>
+                                    <td class="message-cell" title="${conf.message || ''}">
+                                        ${conf.message || '<em>Aucun message</em>'}
+                                    </td>
+                                    <td>
+                                        <button class="delete-btn" onclick="confirmDelete('${conf.id}', '${conf.prenom} ${conf.nom}')">
+                                            🗑️
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            tableContent.innerHTML = tableHTML;
+        }
+
+        // Actualiser les données
+        function refreshData() {
+            document.getElementById('tableContent').innerHTML = '<div class="loading"></div>';
+            setTimeout(() => {
+                loadData();
+            }, 500);
+        }
+
+        // Exporter en CSV
+        function exportData() {
+            if (confirmations.length === 0) {
+                alert('Aucune donnée à exporter');
+                return;
+            }
+
+            const headers = ['Date', 'Nom', 'Prénom', 'Nb Invités', 'Liste Invités', 'Message'];
+            const rows = confirmations.map(conf => [
+                new Date(conf.dateConfirmation).toLocaleDateString('fr-FR'),
+                conf.nom,
+                conf.prenom,
+                conf.nbInvites,
+                conf.invites.map(inv => inv.prenom + ' ' + inv.nom).join('; '),
+                conf.message || ''
+            ]);
+
+            const csvContent = [headers, ...rows]
+                .map(row => row.map(cell => `"${cell}"`).join(','))
+                .join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `confirmations_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+
+        // Ajouter des données de test
+        function addTestData() {
+            const testData = [
+                {
+                    id: 'test_' + Date.now(),
+                    nom: 'Dupont',
+                    prenom: 'Jean',
+                    nbInvites: 2,
+                    invites: [
+                        { nom: 'Dupont', prenom: 'Jean', principal: true },
+                        { nom: 'Dupont', prenom: 'Marie', principal: false }
+                    ],
+                    message: 'Nous avons hâte de célébrer avec vous !',
+                    dateConfirmation: new Date().toISOString(),
+                    timestamp: Date.now()
+                },
+                {
+                    id: 'test_' + (Date.now() + 1),
+                    nom: 'Martin',
+                    prenom: 'Sophie',
+                    nbInvites: 1,
+                    invites: [
+                        { nom: 'Martin', prenom: 'Sophie', principal: true }
+                    ],
+                    message: '',
+                    dateConfirmation: new Date(Date.now() - 86400000).toISOString(), // Hier
+                    timestamp: Date.now() - 86400000
+                }
+            ];
+
+            confirmations.push(...testData);
+            localStorage.setItem('confirmations', JSON.stringify(confirmations));
+            loadData();
+            alert('Données de test ajoutées !');
+        }
+
+        // Confirmer suppression
+        function confirmDelete(id, name) {
+            currentDeleteId = id;
+            document.getElementById('confirmMessage').textContent = 
+                `Êtes-vous sûr de vouloir supprimer la confirmation de ${name} ?`;
+            document.getElementById('confirmModal').style.display = 'block';
+            
+            // Ajouter l'event listener pour le bouton de confirmation
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                deleteConfirmation(id);
+                closeConfirmModal();
+            };
+        }
+
+        // Supprimer une confirmation
+        function deleteConfirmation(id) {
+            confirmations = confirmations.filter(conf => conf.id !== id);
+            localStorage.setItem('confirmations', JSON.stringify(confirmations));
+            loadData();
+        }
+
+        // Fermer modal de confirmation
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+            currentDeleteId = null;
+        }
+
+        // Confirmer suppression de toutes les données
+        function confirmClearAll() {
+            if (confirmations.length === 0) {
+                alert('Aucune donnée à supprimer');
+                return;
+            }
+            
+            if (confirm(`Êtes-vous sûr de vouloir supprimer toutes les ${confirmations.length} confirmations ?\n\nCette action est irréversible.`)) {
+                confirmations = [];
+                localStorage.removeItem('confirmations');
+                loadData();
+                alert('Toutes les données ont été supprimées');
+            }
+        }
+
+        // Fermer modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const modal = document.getElementById('confirmModal');
+            if (event.target === modal) {
+                closeConfirmModal();
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,647 @@
+/* Reset et base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    line-height: 1.6;
+    color: #333;
+    background: #ffffff url('mise-au-point-selective-de-fruits-verts-ronds-suspendus-a-un-arbre.jpg') center/cover no-repeat fixed;
+    min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('mise-au-point-selective-de-fruits-verts-ronds-suspendus-a-un-arbre.jpg') center/cover no-repeat;
+    filter: blur(1px);
+    z-index: -2;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    z-index: -1;
+}
+
+/* Container principal */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
+
+/* Header */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.event-image {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+    background: white;
+    padding: 8px;
+}
+
+.main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Main content */
+main {
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+
+
+.message {
+    text-align: center;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #333;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+.message p {
+    margin-bottom: 15px;
+}
+
+/* Footer et bouton principal */
+footer {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.confirm-button {
+    background: rgba(44, 62, 80, 0.95);
+    color: white;
+    border: 2px solid rgba(44, 62, 80, 0.95);
+    padding: 16px 35px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    letter-spacing: 0.3px;
+    text-transform: none;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.confirm-button:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #2c3e50;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.confirm-button:active {
+    transform: translateY(-1px);
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: rgba(255, 255, 255, 0.98);
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease-out;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    border: 1px solid rgba(232, 232, 232, 0.8);
+    backdrop-filter: blur(20px);
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2 {
+    background: #f8f9fa;
+    color: #2c3e50;
+    padding: 30px;
+    margin: 0;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+    font-size: 1.4rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 400;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 28px;
+    color: #6c757d;
+    font-size: 1.8rem;
+    font-weight: normal;
+    cursor: pointer;
+    z-index: 1001;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.close:hover {
+    color: #2c3e50;
+}
+
+/* Form styles */
+form {
+    padding: 35px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 0.95rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #2c3e50;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #2c3e50;
+    background-color: white;
+    box-shadow: 0 0 0 2px rgba(44, 62, 80, 0.1);
+}
+
+.additional-guests {
+    margin-top: 20px;
+}
+
+.guest-fields {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #e9ecef;
+}
+
+.guest-fields h4 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 500;
+}
+
+.guest-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+/* Form buttons */
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.cancel-btn,
+.submit-btn {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.cancel-btn {
+    background: #f8f9fa;
+    color: #6c757d;
+    border: 1px solid #d1d5db;
+}
+
+.cancel-btn:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.submit-btn {
+    background: #2c3e50;
+    color: white;
+    border: 1px solid #2c3e50;
+}
+
+.submit-btn:hover {
+    background: #1a252f;
+}
+
+/* Success popup */
+.success-popup {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+}
+
+.success-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    animation: successSlideIn 0.5s ease-out;
+}
+
+@keyframes successSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.success-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+
+.success-content h3 {
+    color: #28a745;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.success-content p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.success-btn {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.success-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    main {
+        padding: 20px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    .guest-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .detail-label {
+        margin-bottom: 5px;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .confirm-button {
+        padding: 15px 30px;
+        font-size: 1rem;
+    }
+    
+    form {
+        padding: 20px;
+    }
+    
+    .modal-content h2 {
+        padding: 20px;
+        font-size: 1.3rem;
+    }
+}
+
+/* Bouton flottant informations */
+.floating-info-btn {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(44, 62, 80, 0.9);
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-info-btn:hover {
+    background: rgba(44, 62, 80, 1);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.floating-info-btn:active {
+    transform: scale(0.95);
+}
+
+/* Modal informations */
+.info-modal {
+    max-width: 650px;
+    max-height: 85vh;
+}
+
+.info-content {
+    padding: 0;
+}
+
+.info-section {
+    margin-bottom: 35px;
+    padding: 0 35px;
+}
+
+.info-section:last-child {
+    margin-bottom: 20px;
+}
+
+.info-section h3 {
+    color: #2c3e50;
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 500;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+}
+
+/* Programme */
+.schedule-item {
+    display: flex;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #2c3e50;
+}
+
+.time {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-right: 20px;
+    min-width: 80px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.event-details {
+    flex: 1;
+    line-height: 1.6;
+}
+
+.event-details strong {
+    color: #2c3e50;
+    font-size: 1.05rem;
+}
+
+.event-details em {
+    color: #6c757d;
+    font-style: italic;
+}
+
+.address {
+    color: #28a745;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    display: block;
+}
+
+/* Transport */
+.transport-list {
+    list-style: none;
+    padding: 0;
+}
+
+.transport-list li {
+    margin-bottom: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+/* Hébergement */
+.hotels {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+.hotel-group {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.hotel-group h4 {
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    font-family: 'Georgia', 'Times New Roman', serif;
+}
+
+.hotel-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.hotel-group li {
+    margin-bottom: 8px;
+    color: #495057;
+    padding-left: 15px;
+    position: relative;
+}
+
+.hotel-group li:before {
+    content: '🏨';
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Responsive pour le bouton flottant */
+@media (max-width: 768px) {
+    .floating-info-btn {
+        top: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+    
+    .info-modal {
+        max-width: 95%;
+        max-height: 90vh;
+    }
+    
+    .info-section {
+        padding: 0 25px;
+    }
+    
+    .schedule-item {
+        flex-direction: column;
+        text-align: left;
+    }
+    
+    .time {
+        margin-bottom: 10px;
+        margin-right: 0;
+    }
+    
+    .hotels {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .info-section {
+        padding: 0 20px;
+    }
+    
+    .schedule-item {
+        padding: 15px;
+    }
+}
