@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#8B7355">
+    <title>Administration - L'Autre Boulangerie</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica', 'Arial', sans-serif;
+            background: #FAF8F6;
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .admin-container {
+            max-width: 100%;
+            margin: 0;
+            background: white;
+            border-radius: 0;
+            min-height: 100vh;
+            box-shadow: none;
+        }
+
+        .admin-header {
+            background: white;
+            color: #1A1A1A;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #E8E5E1;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .admin-header h1 {
+            font-size: 1.2em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .logout-btn {
+            padding: 12px 24px;
+            background: white;
+            color: #8B7355;
+            border: 1px solid #8B7355;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #F5F1ED;
+        }
+
+        .tabs {
+            display: flex;
+            background: #F5F1ED;
+            border-bottom: 1px solid #E8E5E1;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            padding: 14px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+            color: #6B5D52;
+            min-width: fit-content;
+            flex-shrink: 0;
+            touch-action: manipulation;
+        }
+
+        .tab:hover {
+            background: rgba(139, 115, 85, 0.08);
+            color: #8B7355;
+        }
+
+        .tab.active {
+            background: white;
+            color: #8B7355;
+            border-bottom: 2px solid #8B7355;
+        }
+
+        .tab-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        @media (min-width: 480px) {
+            .section-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .section-header h2 {
+            color: #1A1A1A;
+            font-size: 1.6em;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: #8B7355;
+            color: white;
+            border: 1px solid #8B7355;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1em;
+        }
+
+        .btn-primary:hover {
+            background: #6B5D52;
+            border-color: #6B5D52;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        @media (min-width: 480px) {
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        .product-card {
+            background: white;
+            border: 1px solid #E8E5E1;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: row;
+        }
+
+        @media (min-width: 480px) {
+            .product-card {
+                flex-direction: column;
+            }
+        }
+
+        .product-card:hover {
+            border-color: #8B7355;
+            box-shadow: 0 2px 8px rgba(139, 115, 85, 0.12);
+        }
+
+        .product-card img {
+            width: 120px;
+            height: 90px;
+            object-fit: cover;
+            background: #F5F1ED;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 480px) {
+            .product-card img {
+                width: 100%;
+                height: 160px;
+            }
+        }
+
+        .product-card-body {
+            padding: 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (min-width: 480px) {
+            .product-card-body {
+                padding: 16px;
+            }
+        }
+
+        .product-card-title {
+            font-size: 0.95em;
+            font-weight: 500;
+            color: #1A1A1A;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        @media (min-width: 480px) {
+            .product-card-title {
+                font-size: 1.05em;
+                margin-bottom: 8px;
+            }
+        }
+
+        .product-card-price {
+            font-size: 1.1em;
+            color: #8B7355;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        @media (min-width: 480px) {
+            .product-card-price {
+                font-size: 1.2em;
+                margin-bottom: 15px;
+            }
+        }
+
+        .product-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit, .btn-delete {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.85em;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 480px) {
+            .product-card-actions {
+                gap: 10px;
+            }
+            
+            .btn-edit, .btn-delete {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* Styles pour les produits en rupture de stock */
+        .product-card.out-of-stock {
+            opacity: 0.7;
+            border-color: #C94E3A;
+            background: linear-gradient(135deg, transparent 0%, rgba(201, 78, 58, 0.05) 100%);
+        }
+
+        .product-card.out-of-stock::before {
+            content: "RUPTURE";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #C94E3A;
+            color: white;
+            font-size: 0.7em;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            z-index: 1;
+        }
+
+        .product-card {
+            position: relative;
+        }
+
+        .btn-edit, .btn-delete {
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #6B9D7B;
+            color: white;
+            border-color: #6B9D7B;
+        }
+
+        .btn-edit:hover {
+            background: #5A8A6A;
+        }
+
+        .btn-delete {
+            background: #C94E3A;
+            color: white;
+            border-color: #C94E3A;
+        }
+
+        .btn-delete:hover {
+            background: #B33E2A;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 26, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 100%;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        @media (min-width: 480px) {
+            .modal {
+                padding: 20px;
+            }
+            
+            .modal-content {
+                padding: 32px;
+                max-width: 500px;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.2em;
+            color: #1A1A1A;
+            font-weight: 600;
+        }
+
+        @media (min-width: 480px) {
+            .modal-header {
+                margin-bottom: 28px;
+            }
+            
+            .modal-header h3 {
+                font-size: 1.4em;
+            }
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #9B8F85;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1A1A1A;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #D4CFC8;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #8B7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+            outline: none;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-direction: column;
+        }
+
+        @media (min-width: 480px) {
+            .form-actions {
+                flex-direction: row;
+                margin-top: 28px;
+            }
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            color: #6B5D52;
+            border: 1px solid #D4CFC8;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-secondary:hover {
+            background: #F5F1ED;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid #E8E5E1;
+        }
+        
+        .orders-table {
+            width: 100%;
+            background: white;
+            border-radius: 0;
+            overflow: hidden;
+            border: none;
+            min-width: 600px;
+        }
+
+        .orders-table th, .orders-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid #E8E5E1;
+            font-size: 0.85em;
+        }
+
+        @media (min-width: 480px) {
+            .orders-table {
+                min-width: auto;
+            }
+            
+            .orders-table th, .orders-table td {
+                padding: 16px;
+                font-size: 0.9em;
+            }
+        }
+
+        .orders-table th {
+            background: #F5F1ED;
+            font-weight: 600;
+            color: #1A1A1A;
+            font-size: 0.9em;
+        }
+
+        .orders-table tr:hover {
+            background: #FAF8F6;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #E8E5E1;
+            color: #1A1A1A;
+            padding: 28px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        @media (min-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #E8E5E1;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .stat-card h3 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            color: #8B7355;
+            font-weight: 600;
+        }
+
+        @media (min-width: 480px) {
+            .stat-card {
+                padding: 24px;
+            }
+            
+            .stat-card h3 {
+                font-size: 2.2em;
+                margin-bottom: 10px;
+            }
+        }
+
+        .stat-card p {
+            font-size: 0.95em;
+            color: #6B5D52;
+            font-weight: 400;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-direction: column;
+        }
+
+        @media (min-width: 480px) {
+            .filters {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+
+        .filters input, .filters select {
+            padding: 12px 16px;
+            border: 1px solid #D4CFC8;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .filters input, .filters select {
+                width: auto;
+                flex: 1;
+            }
+        }
+
+        .filters input:focus, .filters select:focus {
+            outline: none;
+            border-color: #8B7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+        }
+
+
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .orders-table {
+                font-size: 0.85em;
+            }
+
+            .orders-table th, .orders-table td {
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>🔧 L'Autre Boulangerie</h1>
+            <button class="logout-btn" onclick="logout()">Déconnexion</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('menus')">Menus</button>
+            <button class="tab" onclick="showTab('plats')">Plats</button>
+            <button class="tab" onclick="showTab('desserts')">Desserts</button>
+            <button class="tab" onclick="showTab('boissons')">Boissons</button>
+            <button class="tab" onclick="showTab('historique')">Historique</button>
+            <button class="tab" onclick="showTab('parametres')">Paramètres</button>
+        </div>
+
+        <!-- Tab Menus -->
+        <div id="tab-menus" class="tab-content active">
+            <div class="section-header">
+                <h2>Gestion des Menus</h2>
+                <button class="btn-primary" onclick="showAddMenuModal()">+ Ajouter un menu</button>
+            </div>
+            <div id="menusGrid" class="products-grid"></div>
+        </div>
+
+        <!-- Tab Plats -->
+        <div id="tab-plats" class="tab-content">
+            <div class="section-header">
+                <h2>Gestion des Plats</h2>
+                <button class="btn-primary" onclick="showAddPlatModal()">+ Ajouter un plat</button>
+            </div>
+            <div id="platsGrid" class="products-grid"></div>
+        </div>
+
+        <!-- Tab Desserts -->
+        <div id="tab-desserts" class="tab-content">
+            <div class="section-header">
+                <h2>Gestion des Desserts</h2>
+                <button class="btn-primary" onclick="showAddDessertModal()">+ Ajouter un dessert</button>
+            </div>
+            <div id="dessertsGrid" class="products-grid"></div>
+        </div>
+
+        <!-- Tab Boissons -->
+        <div id="tab-boissons" class="tab-content">
+            <div class="section-header">
+                <h2>Gestion des Boissons</h2>
+                <button class="btn-primary" onclick="showAddBoissonModal()">+ Ajouter une boisson</button>
+            </div>
+            <div id="boissonsGrid" class="products-grid"></div>
+        </div>
+
+        <!-- Tab Historique -->
+        <div id="tab-historique" class="tab-content">
+            <div class="section-header">
+                <h2>Historique des Commandes</h2>
+                <button class="btn-primary" onclick="exportOrders()">📥 Exporter CSV</button>
+            </div>
+            
+            <div class="stats-grid" id="statsGrid"></div>
+            
+            <div class="filters">
+                <input type="date" id="filterDateStart" placeholder="Date début">
+                <input type="date" id="filterDateEnd" placeholder="Date fin">
+                <input type="text" id="filterSearch" placeholder="Rechercher...">
+                <button class="btn-primary" onclick="filterOrders()">Filtrer</button>
+                <button class="btn-secondary" onclick="resetFilters()">Réinitialiser</button>
+            </div>
+            
+            <div class="table-container">
+                <table class="orders-table" id="ordersTable"></table>
+            </div>
+        </div>
+
+        <!-- Tab Paramètres -->
+        <div id="tab-parametres" class="tab-content">
+            <div class="section-header">
+                <h2>Paramètres</h2>
+            </div>
+            
+            <div class="form-group">
+                <label>Code PIN administrateur</label>
+                <input type="password" id="adminPinInput" maxlength="4" placeholder="Nouveau code PIN (4 chiffres)">
+                <button class="btn-primary" onclick="updateAdminPin()" style="margin-top: 10px;">Modifier le PIN</button>
+            </div>
+            
+            <div class="form-group" style="margin-top: 30px;">
+                <label>Gestion des données</label>
+                <button class="btn-primary" onclick="backupData()" style="margin-right: 10px;">💾 Sauvegarder</button>
+                <button class="btn-secondary" onclick="confirmResetData()">🗑️ Réinitialiser</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Formulaire -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Ajouter un produit</h3>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="productForm" onsubmit="return false;">
+                <input type="hidden" id="productId">
+                <input type="hidden" id="productCategory">
+                
+                <div class="form-group">
+                    <label>Nom *</label>
+                    <input type="text" id="productNom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Prix (€) *</label>
+                    <input type="number" id="productPrix" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group" id="descriptionGroup" style="display: none;">
+                    <label>Description</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group" id="categorieGroup" style="display: none;">
+                    <label>Catégorie</label>
+                    <select id="productCategorie">
+                        <option value="sandwich">Sandwich</option>
+                        <option value="base-salade">Base de salade</option>
+                        <option value="garniture-salade">Garniture de salade</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="supplementGroup" style="display: none;">
+                    <label>Supplément (€)</label>
+                    <input type="number" id="productSupplement" step="0.01" min="0" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label>Stock disponible (laisser vide = illimité)</label>
+                    <input type="number" id="productStock" min="0" placeholder="Ex: 10">
+                    <small style="color: #6B5D52; font-size: 0.9em; margin-top: 4px; display: block;">
+                        Vide = stock illimité • 0 = rupture de stock
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Image du produit</label>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <input type="file" id="productImageFile" accept="image/*" capture="environment" 
+                               style="padding: 12px; border: 2px dashed #D4CFC8; border-radius: 6px; background: #F5F1ED;">
+                        <div style="text-align: center; color: #6B5D52; font-size: 0.9em;">OU</div>
+                        <input type="url" id="productImage" placeholder="https://images.example.com/photo.jpg"
+                               style="border: 1px solid #D4CFC8;">
+                    </div>
+                    <div id="imagePreview" style="margin-top: 12px; text-align: center;"></div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Annuler</button>
+                    <button type="submit" class="btn-primary" onclick="saveProduct()">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>emailjs.init("xfWDumGsDD1rqIPiy");</script>
+    <script src="./data-manager.js"></script>
+    <script src="./admin-app.js"></script>
+</body>
+</html>

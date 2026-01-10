@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#8B7355">
+    <title>Commander - L'Autre Boulangerie</title>
+    <script src="./data-manager.js"></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("xfWDumGsDD1rqIPiy");
+        })();
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica', 'Arial', sans-serif;
+            background: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1920&h=1080&fit=crop') center/cover;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            color: #1A1A1A;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border-bottom: 1px solid #E8E5E1;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 1px solid #D4CFC8;
+            color: #6B5D52;
+            font-size: 1.2em;
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #F5F1ED;
+            border-color: #8B7355;
+        }
+
+        .header h1 {
+            font-size: 1.15em;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .cart-badge {
+            position: relative;
+            color: #6B5D52;
+            font-size: 1.3em;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #8B7355;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.6em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            padding: 24px 20px;
+            background: white;
+            overflow-x: auto;
+            gap: 8px;
+            border-bottom: 1px solid #E8E5E1;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .step-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #E8E5E1;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            color: #9B8F85;
+        }
+
+        .step.active .step-circle {
+            background: #8B7355;
+            color: white;
+        }
+
+        .step.completed .step-circle {
+            background: #6B9D7B;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.7em;
+            color: #9B8F85;
+            font-weight: 400;
+        }
+
+        .step.active .step-label {
+            color: #8B7355;
+            font-weight: 600;
+        }
+
+        /* Page Container */
+        .page {
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .page-content {
+            padding: 24px 20px;
+        }
+
+        .page-title {
+            font-size: 1.6em;
+            color: #1A1A1A;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            color: #6B5D52;
+            margin-bottom: 24px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            border: 1px solid #E8E5E1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card.selected {
+            border: 2px solid #8B7355;
+            box-shadow: 0 2px 8px rgba(139, 115, 85, 0.15);
+        }
+
+        .card-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            background: #F5F1ED;
+        }
+
+        .card-content {
+            padding: 14px;
+        }
+
+        .card-title {
+            font-size: 0.95em;
+            font-weight: 500;
+            color: #1A1A1A;
+            margin-bottom: 4px;
+            line-height: 1.3;
+        }
+
+        .card-price {
+            color: #8B7355;
+            font-size: 1em;
+            font-weight: 600;
+        }
+
+        .card-description {
+            font-size: 0.85em;
+            color: #6B5D52;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #6B9D7B;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .supplement-badge {
+            background: #C9A961;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1A1A1A;
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #D4CFC8;
+            border-radius: 6px;
+            font-size: 1em;
+            background: white;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8B7355;
+            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
+        }
+
+        /* Summary */
+        .summary-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .summary-value {
+            color: #333;
+            text-align: right;
+        }
+
+        .summary-total {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        /* Ticket */
+        .ticket {
+            background: white;
+            border: 2px dashed #FF6B35;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+
+        .ticket-number {
+            font-size: 1.4em;
+            color: #8B7355;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+
+        .ticket-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 0.9em;
+            border-bottom: 1px solid #E8E5E1;
+        }
+
+        /* Bottom Actions */
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px 20px;
+            box-shadow: 0 -1px 3px rgba(0,0,0,0.06);
+            border-top: 1px solid #E8E5E1;
+            display: flex;
+            gap: 12px;
+            z-index: 90;
+        }
+
+        .btn {
+            padding: 16px;
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 52px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .btn-primary {
+            flex: 1;
+            background: #8B7355;
+            color: white;
+            border-color: #8B7355;
+        }
+
+        .btn-primary:active,
+        .btn-primary:focus {
+            background: #6B5D52;
+            border-color: #6B5D52;
+            outline: none;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6B5D52;
+            border-color: #D4CFC8;
+            min-width: 52px;
+        }
+
+        .btn-secondary:active,
+        .btn-secondary:focus {
+            background: #F5F1ED;
+            outline: none;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        /* Info Message */
+        .info-message {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #1565C0;
+            font-size: 0.9em;
+        }
+
+        .success-animation {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            font-size: 5em;
+            animation: bounce 1s;
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #FF6B35;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 400px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <button class="back-btn">←</button>
+            <h1>🥖 L'Autre Boulangerie</h1>
+            <div class="cart-badge">
+                <span style="font-size: 1.5em;">🛒</span>
+                <span class="cart-count" id="cartCount" style="display: none;">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-steps">
+        <div class="step active" id="step-1">
+            <div class="step-circle">1</div>
+            <div class="step-label">Info</div>
+        </div>
+        <div class="step" id="step-2">
+            <div class="step-circle">2</div>
+            <div class="step-label">Type</div>
+        </div>
+        <div class="step" id="step-3">
+            <div class="step-circle">3</div>
+            <div class="step-label">Plat</div>
+        </div>
+        <div class="step" id="step-4">
+            <div class="step-circle">4</div>
+            <div class="step-label">Dessert</div>
+        </div>
+        <div class="step" id="step-5">
+            <div class="step-circle">5</div>
+            <div class="step-label">Boisson</div>
+        </div>
+        <div class="step" id="step-6">
+            <div class="step-circle">6</div>
+            <div class="step-label">Récap</div>
+        </div>
+    </div>
+
+    <!-- Page 1: Client Info -->
+    <div class="page active" id="page-1">
+        <div class="page-content">
+            <h2 class="page-title">Vos informations</h2>
+            <p class="page-subtitle">Pour identifier votre commande</p>
+            
+            <div class="form-group">
+                <label>👤 Prénom</label>
+                <input type="text" id="prenom" placeholder="Jean" required>
+            </div>
+            
+            <div class="form-group">
+                <label>👤 Nom</label>
+                <input type="text" id="nom" placeholder="Dupont" required>
+            </div>
+            
+            <div class="form-group">
+                <label>📱 Téléphone</label>
+                <input type="tel" id="telephone" placeholder="06 12 34 56 78" required>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Menu Type -->
+    <div class="page" id="page-2">
+        <div class="page-content">
+            <h2 class="page-title">Choisissez votre formule</h2>
+            <p class="page-subtitle">Menu ou à la carte</p>
+            
+            <div class="cards-grid" id="menuCards"></div>
+            
+            <div class="info-message">
+                💡 Avec les menus, vous économisez et c'est plus simple !
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 3: Plat -->
+    <div class="page" id="page-3">
+        <div class="page-content">
+            <h2 class="page-title">Votre plat principal</h2>
+            <p class="page-subtitle" id="platSubtitle">Choisissez votre sandwich</p>
+            
+            <div class="cards-grid" id="platCards"></div>
+        </div>
+    </div>
+
+    <!-- Page 4: Dessert -->
+    <div class="page" id="page-4">
+        <div class="page-content">
+            <h2 class="page-title">Votre dessert</h2>
+            <p class="page-subtitle">Un petit plaisir sucré</p>
+            
+            <div class="cards-grid" id="dessertCards"></div>
+        </div>
+    </div>
+
+    <!-- Page 5: Boisson -->
+    <div class="page" id="page-5">
+        <div class="page-content">
+            <h2 class="page-title">Votre boisson</h2>
+            <p class="page-subtitle">Pour accompagner votre repas</p>
+            
+            <div class="cards-grid" id="boissonCards"></div>
+        </div>
+    </div>
+
+    <!-- Page 6: Summary -->
+    <div class="page" id="page-6">
+        <div class="page-content">
+            <h2 class="page-title">Récapitulatif</h2>
+            <p class="page-subtitle">Vérifiez votre commande</p>
+            
+            <div class="summary-card" id="summaryContent"></div>
+        </div>
+    </div>
+
+    <!-- Page 7: Success -->
+    <div class="page" id="page-7">
+        <div class="page-content">
+            <div class="success-animation">
+                <div class="success-icon">✅</div>
+                <h2>Commande validée !</h2>
+                <p style="color: #666; margin-top: 10px;">Votre ticket est prêt</p>
+            </div>
+            
+            <div class="ticket" id="ticketContent"></div>
+            
+            <button class="btn btn-primary" onclick="window.print()" style="width: 100%; margin-bottom: 10px;">
+                🖨️ Imprimer le ticket
+            </button>
+            
+            <button class="btn btn-secondary" onclick="newOrder()" style="width: 100%;">
+                🔄 Nouvelle commande
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Actions -->
+    <div class="bottom-actions" id="bottomActions">
+        <button class="btn btn-secondary" id="prevBtn">←</button>
+        <button class="btn btn-primary" id="nextBtn">Suivant →</button>
+    </div>
+
+    <script src="./user-app.js"></script>
+</body>
+</html>
