@@ -602,46 +602,133 @@ form {
     top: 0;
 }
 
-/* Responsive pour le bouton flottant */
+.confirmation-button-section {
+    text-align: center;
+    margin-top: 40px;
+    padding: 30px;
+}
+
+.confirmation-button-section .confirm-button {
+    background: rgba(44, 62, 80, 0.95);
+    color: white;
+    border: 2px solid rgba(44, 62, 80, 0.95);
+    padding: 18px 40px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.confirmation-button-section .confirm-button:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #2c3e50;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.confirmation-button-section {
+    text-align: center;
+    margin-top: 40px;
+    padding: 30px;
+}
+
+.confirmation-button-section .confirm-button {
+    background: rgba(44, 62, 80, 0.95);
+    color: white;
+    border: 2px solid rgba(44, 62, 80, 0.95);
+    padding: 18px 40px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    letter-spacing: 0.3px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.confirmation-button-section .confirm-button:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #2c3e50;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/* Page Le mariage */
+.page-title {
+    color: #2c3e50;
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 400;
+}
+
+.back-button-container {
+    margin-bottom: 20px;
+}
+
+.back-button {
+    background: rgba(44, 62, 80, 0.1);
+    color: #2c3e50;
+    border: 1px solid rgba(44, 62, 80, 0.3);
+    padding: 10px 20px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    backdrop-filter: blur(10px);
+}
+
+.back-button:hover {
+    background: rgba(44, 62, 80, 0.2);
+    transform: translateX(-2px);
+}
+
+.program-section {
+    margin-bottom: 40px;
+}
+
+.program-section h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    text-align: center;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-weight: 500;
+}
+
+/* Responsive pour la page Le mariage */
 @media (max-width: 768px) {
-    .floating-info-btn {
-        top: 20px;
-        right: 20px;
-        width: 45px;
-        height: 45px;
-        font-size: 1.3rem;
+    .page-title {
+        font-size: 1.8rem;
     }
     
-    .info-modal {
-        max-width: 95%;
-        max-height: 90vh;
+    .confirmation-button-section {
+        padding: 20px;
+        margin-top: 30px;
     }
     
-    .info-section {
-        padding: 0 25px;
-    }
-    
-    .schedule-item {
-        flex-direction: column;
-        text-align: left;
-    }
-    
-    .time {
-        margin-bottom: 10px;
-        margin-right: 0;
-    }
-    
-    .hotels {
-        grid-template-columns: 1fr;
+    .program-section h2 {
+        font-size: 1.5rem;
     }
 }
 
 @media (max-width: 480px) {
-    .info-section {
-        padding: 0 20px;
+    .confirmation-button-section {
+        padding: 15px;
+        margin-top: 25px;
     }
     
-    .schedule-item {
-        padding: 15px;
+    .confirmation-button-section .confirm-button {
+        padding: 15px 30px;
+        font-size: 1.1rem;
     }
 }

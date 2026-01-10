@@ -3,36 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmation d'Invitation</title>
+    <title>Le Mariage - Programme</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="container">
+        <!-- Bouton retour -->
+        <div class="back-button-container">
+            <button onclick="window.location.href='index.html'" class="back-button">← Retour</button>
+        </div>
+
         <header>
-            <div class="event-image">
-                <img src="Attachment-1.jpeg" alt="Invitation" class="main-image">
-            </div>
+            <h1 class="page-title">Le Mariage</h1>
         </header>
 
         <main>
-            <div class="message">
-                <p>Merci de confirmer votre présence en cliquant sur le bouton ci-dessous.</p>
+            <div class="program-section">
+                <h2>📅 Programme de la journée</h2>
+                
+                <div class="schedule-item">
+                    <div class="time">16h30</div>
+                    <div class="event-details">
+                        <strong>Rendez-vous à la Mairie de Vendargues</strong><br>
+                        <em>pour le mariage civil</em><br>
+                        <span class="address">📍 Pl. de la Mairie, 34740 Vendargues</span>
+                    </div>
+                </div>
+                
+                <div class="schedule-item">
+                    <div class="time">18h00</div>
+                    <div class="event-details">
+                        <strong>Rendez-vous à l'Oliveraie de l'Enclos de la Croix</strong><br>
+                        <em>à Lansargues</em><br>
+                        <span class="address">📍 Chem. de Mudaison À Saint-N.de P., 34130 Lansargues</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="confirmation-button-section">
+                <button id="confirmBtn" class="confirm-button">
+                    ✨ Confirmation ✨
+                </button>
             </div>
         </main>
-
-        <footer>
-            <button id="marriageBtn" class="confirm-button" onclick="window.location.href='le-mariage.html'">
-                ✨ Le mariage ✨
-            </button>
-        </footer>
     </div>
 
     <!-- Bouton flottant informations -->
     <button id="infoBtn" class="floating-info-btn" title="Informations pratiques">
         +
     </button>
+
+    <!-- Modal Confirmation -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Confirmation de présence</h2>
+            
+            <form id="confirmationForm">
+                <div class="form-group">
+                    <label for="nom">Nom *</label>
+                    <input type="text" id="nom" name="nom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="prenom">Prénom *</label>
+                    <input type="text" id="prenom" name="prenom" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="nbInvites">Nombre total d'invités (vous inclus) *</label>
+                    <select id="nbInvites" name="nbInvites" required>
+                        <option value="">Sélectionnez...</option>
+                        <option value="1">1 personne</option>
+                        <option value="2">2 personnes</option>
+                        <option value="3">3 personnes</option>
+                        <option value="4">4 personnes</option>
+                        <option value="5">5 personnes</option>
+                        <option value="6">6 personnes</option>
+                        <option value="7">7 personnes</option>
+                        <option value="8">8 personnes</option>
+                        <option value="9">9 personnes</option>
+                        <option value="10">10 personnes</option>
+                    </select>
+                </div>
+
+                <div id="additionalGuests" class="additional-guests"></div>
+
+                <div class="form-group">
+                    <label for="message">Message (optionnel)</label>
+                    <textarea id="message" name="message" rows="3" placeholder="Un petit mot pour nous..."></textarea>
+                </div>
+
+                <div class="form-buttons">
+                    <button type="button" class="cancel-btn">Annuler</button>
+                    <button type="submit" class="submit-btn">Confirmer</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Modal Informations Pratiques -->
     <div id="infoModal" class="modal">
