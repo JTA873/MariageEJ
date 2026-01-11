@@ -9,6 +9,18 @@ const firebaseConfig = {
     appId: "YOUR_APP_ID"
 };
 
+// Configuration EmailJS
+const emailJSConfig = {
+    publicKey: "YOUR_EMAILJS_PUBLIC_KEY",  // Clé publique de votre compte EmailJS
+    serviceID: "YOUR_SERVICE_ID",          // ID du service email (Gmail, etc.)
+    templateID: "YOUR_TEMPLATE_ID"         // ID du template de l'email
+};
+
+// Initialiser EmailJS
+if (typeof emailjs !== 'undefined') {
+    emailjs.init(emailJSConfig.publicKey);
+}
+
 // Initialize Firebase (décommentez quand vous aurez votre config)
 // firebase.initializeApp(firebaseConfig);
 // const db = firebase.firestore();
@@ -204,6 +216,45 @@ function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
+// Envoyer un email de notification
+async function sendEmailNotification(data) {
+    if (typeof emailjs === 'undefined') {
+        console.log('EmailJS non disponible - email non envoyé');
+        return false;
+    }
+    
+    try {
+        // Formater la liste des invités
+        let guestsDetails = data.invites.map((invite, index) => 
+            `${index + 1}. ${invite.prenom} ${invite.nom}${invite.principal ? ' (principal)' : ''}`
+        ).join('\n');
+        
+        // Préparer les paramètres de l'email
+        const emailParams = {
+            to_email: "votre-email@exemple.com",  // REMPLACEZ par votre email
+            from_name: `${data.prenom} ${data.nom}`,
+            confirmation_date: new Date(data.dateConfirmation).toLocaleString('fr-FR'),
+            nb_invites: data.nbInvites,
+            guest_list: guestsDetails,
+            message: data.message || 'Aucun message',
+            confirmation_id: data.id
+        };
+        
+        // Envoyer l'email
+        await emailjs.send(
+            emailJSConfig.serviceID,
+            emailJSConfig.templateID,
+            emailParams
+        );
+        
+        console.log('Email de notification envoyé avec succès');
+        return true;
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'email:', error);
+        return false;
+    }
+}
+
 // Sauvegarder la confirmation
 async function saveConfirmation(data) {
     try {
@@ -217,11 +268,22 @@ async function saveConfirmation(data) {
             localStorage.setItem('confirmations', JSON.stringify(confirmations));
             console.log('Confirmation sauvegardée localement');
         }
+        
+        // Envoyer l'email de notification
+        await sendEmailNotification(data);
+        
     } catch (error) {
         // Si Firebase échoue, utiliser localStorage
         confirmations.push(data);
         localStorage.setItem('confirmations', JSON.stringify(confirmations));
         console.log('Confirmation sauvegardée localement (fallback)');
+        
+        // Tenter d'envoyer l'email même en cas d'erreur de sauvegarde
+        try {
+            await sendEmailNotification(data);
+        } catch (emailError) {
+            console.error('Erreur lors de l\'envoi de l\'email:', emailError);
+        }
     }
 }
 
