@@ -439,5 +439,4 @@ window.DebugFunctions = {
         localStorage.removeItem('confirmations');
         console.log('Toutes les données ont été supprimées');
     }
-
 };

@@ -685,6 +685,14 @@ form {
     padding: 30px;
 }
 
+.confirmation-button-section .info-label {
+    font-size: 0.8rem;
+    color: rgba(44, 62, 80, 0.6);
+    margin-bottom: 8px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    letter-spacing: 0.3px;
+}
+
 .confirmation-button-section .confirm-button {
     background: rgba(44, 62, 80, 0.95);
     color: white;
