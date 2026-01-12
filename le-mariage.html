@@ -30,6 +30,9 @@
                         <strong>Rendez-vous à la Mairie de Vendargues</strong><br>
                         <em>Début du mariage civil</em><br>
                         <a href="https://www.google.com/maps/search/?api=1&query=Mairie+de+Vendargues,+34740+Vendargues" target="_blank" class="address">📍 Pl. de la Mairie, 34740 Vendargues</a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=43.6502,3.9683" target="_blank" class="itinerary-link">
+                            → Itinéraire
+                        </a>
                     </div>
                 </div>
                 
@@ -39,6 +42,9 @@
                         <strong>Rendez-vous à l'Oliveraie de l'Enclos de la Croix</strong><br>
                         <em>Pour célébrer notre union</em><br>
                         <a href="https://www.google.com/maps/search/?api=1&query=Oliveraie+de+l'Enclos+de+la+Croix,+Chemin+de+Mudaison,+34130+Lansargues" target="_blank" class="address">📍 Chem. de Mudaison À Saint-N.de P., 34130 Lansargues</a>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=43.6385,3.9554" target="_blank" class="itinerary-link">
+                            → Itinéraire
+                        </a>
                     </div>
                 </div>
             </div>
@@ -73,24 +79,30 @@
                     <input type="text" id="prenom" name="prenom" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="nbInvites">Nombre total d'invités (vous inclus) *</label>
-                    <select id="nbInvites" name="nbInvites" required>
-                        <option value="">Sélectionnez...</option>
-                        <option value="1">1 personne</option>
-                        <option value="2">2 personnes</option>
-                        <option value="3">3 personnes</option>
-                        <option value="4">4 personnes</option>
-                        <option value="5">5 personnes</option>
-                        <option value="6">6 personnes</option>
-                        <option value="7">7 personnes</option>
-                        <option value="8">8 personnes</option>
-                        <option value="9">9 personnes</option>
-                        <option value="10">10 personnes</option>
-                    </select>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="hasGuests" name="hasGuests">
+                        <span>Je viens accompagné(e)</span>
+                    </label>
                 </div>
 
-                <div id="additionalGuests" class="additional-guests"></div>
+                <div id="guestsSection" class="guests-section" style="display: none;">
+                    <div class="form-group">
+                        <label for="nbInvites">Nombre d'accompagnants *</label>
+                        <select id="nbInvites" name="nbInvites">
+                            <option value="1">1 personne</option>
+                            <option value="2">2 personnes</option>
+                            <option value="3">3 personnes</option>
+                            <option value="4">4 personnes</option>
+                            <option value="5">5 personnes</option>
+                            <option value="6">6 personnes</option>
+                            <option value="7">7 personnes</option>
+                            <option value="8">8 personnes</option>
+                            <option value="9">9 personnes</option>
+                        </select>
+                    </div>
+                    <div id="additionalGuests" class="additional-guests"></div>
+                </div>
 
                 <div class="form-group">
                     <label for="message">Message (optionnel)</label>

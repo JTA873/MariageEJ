@@ -11,9 +11,9 @@ const firebaseConfig = {
 
 // Configuration EmailJS
 const emailJSConfig = {
-    publicKey: "YOUR_EMAILJS_PUBLIC_KEY",  // Clé publique de votre compte EmailJS
-    serviceID: "YOUR_SERVICE_ID",          // ID du service email (Gmail, etc.)
-    templateID: "YOUR_TEMPLATE_ID"         // ID du template de l'email
+    publicKey: "JhmDqKBuu5Fng9IuS",  // Clé publique de votre compte EmailJS
+    serviceID: "service_elkot5q",          // ID du service email (Gmail, etc.)
+    templateID: "template_2u76yq9"         // ID du template de l'email
 };
 
 // Initialiser EmailJS
@@ -34,6 +34,8 @@ const modal = document.getElementById('confirmModal');
 const closeBtn = document.querySelector('.close');
 const cancelBtn = document.querySelector('.cancel-btn');
 const form = document.getElementById('confirmationForm');
+const hasGuestsCheckbox = document.getElementById('hasGuests');
+const guestsSection = document.getElementById('guestsSection');
 const nbInvitesSelect = document.getElementById('nbInvites');
 const additionalGuestsDiv = document.getElementById('additionalGuests');
 const successPopup = document.getElementById('successMessage');
@@ -46,12 +48,13 @@ const infoCloseBtn = document.querySelector('.info-close');
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function() {
-    confirmBtn.addEventListener('click', openModal);
-    closeBtn.addEventListener('click', closeModal);
-    cancelBtn.addEventListener('click', closeModal);
-    closeSuccessBtn.addEventListener('click', closeSuccessPopup);
-    form.addEventListener('submit', handleFormSubmit);
-    nbInvitesSelect.addEventListener('change', handleGuestNumberChange);
+    if (confirmBtn) confirmBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+    if (closeSuccessBtn) closeSuccessBtn.addEventListener('click', closeSuccessPopup);
+    if (form) form.addEventListener('submit', handleFormSubmit);
+    if (hasGuestsCheckbox) hasGuestsCheckbox.addEventListener('change', handleHasGuestsChange);
+    if (nbInvitesSelect) nbInvitesSelect.addEventListener('change', handleGuestNumberChange);
     
     // Event listeners pour la modale d'informations
     infoBtn.addEventListener('click', openInfoModal);
@@ -106,6 +109,18 @@ function closeInfoModal() {
 function resetForm() {
     form.reset();
     additionalGuestsDiv.innerHTML = '';
+    guestsSection.style.display = 'none';
+}
+
+// Gérer le changement de la checkbox "accompagné"
+function handleHasGuestsChange() {
+    if (hasGuestsCheckbox.checked) {
+        guestsSection.style.display = 'block';
+        handleGuestNumberChange();
+    } else {
+        guestsSection.style.display = 'none';
+        additionalGuestsDiv.innerHTML = '';
+    }
 }
 
 // Gérer le changement du nombre d'invités
@@ -113,27 +128,27 @@ function handleGuestNumberChange() {
     const nbInvites = parseInt(nbInvitesSelect.value);
     additionalGuestsDiv.innerHTML = '';
     
-    if (nbInvites > 1) {
+    if (nbInvites >= 1) {
         const guestFields = document.createElement('div');
         guestFields.className = 'guest-fields';
         guestFields.innerHTML = `
-            <h4>Informations des autres invités</h4>
+            <h4>Informations des accompagnants</h4>
             <div id="guestsList"></div>
         `;
         additionalGuestsDiv.appendChild(guestFields);
         
         const guestsList = document.getElementById('guestsList');
         
-        for (let i = 2; i <= nbInvites; i++) {
+        for (let i = 1; i <= nbInvites; i++) {
             const guestDiv = document.createElement('div');
             guestDiv.className = 'guest-row';
             guestDiv.innerHTML = `
                 <div class="form-group">
-                    <label for="guest${i}nom">Nom de l'invité ${i}</label>
+                    <label for="guest${i}nom">Nom de l'accompagnant ${i}</label>
                     <input type="text" id="guest${i}nom" name="guest${i}nom" required>
                 </div>
                 <div class="form-group">
-                    <label for="guest${i}prenom">Prénom de l'invité ${i}</label>
+                    <label for="guest${i}prenom">Prénom de l'accompagnant ${i}</label>
                     <input type="text" id="guest${i}prenom" name="guest${i}prenom" required>
                 </div>
             `;
@@ -176,8 +191,8 @@ async function handleFormSubmit(event) {
 function collectFormData() {
     const nom = document.getElementById('nom').value.trim();
     const prenom = document.getElementById('prenom').value.trim();
-    const nbInvites = parseInt(document.getElementById('nbInvites').value);
     const message = document.getElementById('message').value.trim();
+    const hasGuests = document.getElementById('hasGuests').checked;
     
     const invites = [{
         nom: nom,
@@ -185,17 +200,24 @@ function collectFormData() {
         principal: true
     }];
     
-    // Ajouter les invités supplémentaires
-    for (let i = 2; i <= nbInvites; i++) {
-        const guestNom = document.getElementById(`guest${i}nom`)?.value.trim();
-        const guestPrenom = document.getElementById(`guest${i}prenom`)?.value.trim();
+    let nbInvites = 1;
+    
+    // Ajouter les invités supplémentaires si accompagné
+    if (hasGuests) {
+        const nbGuestsSelect = parseInt(document.getElementById('nbInvites').value);
+        nbInvites = 1 + nbGuestsSelect;
         
-        if (guestNom && guestPrenom) {
-            invites.push({
-                nom: guestNom,
-                prenom: guestPrenom,
-                principal: false
-            });
+        for (let i = 1; i <= nbGuestsSelect; i++) {
+            const guestNom = document.getElementById(`guest${i}nom`)?.value.trim();
+            const guestPrenom = document.getElementById(`guest${i}prenom`)?.value.trim();
+            
+            if (guestNom && guestPrenom) {
+                invites.push({
+                    nom: guestNom,
+                    prenom: guestPrenom,
+                    principal: false
+                });
+            }
         }
     }
     
@@ -218,8 +240,14 @@ function generateId() {
 
 // Envoyer un email de notification
 async function sendEmailNotification(data) {
+    console.log('=== Début envoi email ===');
+    console.log('EmailJS disponible ?', typeof emailjs !== 'undefined');
+    console.log('Config:', emailJSConfig);
+    console.log('Données:', data);
+    
     if (typeof emailjs === 'undefined') {
-        console.log('EmailJS non disponible - email non envoyé');
+        console.error('EmailJS non disponible - email non envoyé');
+        alert('Erreur: EmailJS n\'est pas chargé. Vérifiez votre connexion internet.');
         return false;
     }
     
@@ -231,7 +259,7 @@ async function sendEmailNotification(data) {
         
         // Préparer les paramètres de l'email
         const emailParams = {
-            to_email: "votre-email@exemple.com",  // REMPLACEZ par votre email
+            to_email: "jadetaraf@hotmail.fr",
             from_name: `${data.prenom} ${data.nom}`,
             confirmation_date: new Date(data.dateConfirmation).toLocaleString('fr-FR'),
             nb_invites: data.nbInvites,
@@ -240,17 +268,21 @@ async function sendEmailNotification(data) {
             confirmation_id: data.id
         };
         
+        console.log('Paramètres email:', emailParams);
+        
         // Envoyer l'email
-        await emailjs.send(
+        const response = await emailjs.send(
             emailJSConfig.serviceID,
             emailJSConfig.templateID,
             emailParams
         );
         
-        console.log('Email de notification envoyé avec succès');
+        console.log('✅ Email envoyé avec succès!', response);
         return true;
     } catch (error) {
-        console.error('Erreur lors de l\'envoi de l\'email:', error);
+        console.error('❌ Erreur lors de l\'envoi de l\'email:', error);
+        console.error('Détails:', error.text || error.message);
+        // Ne pas bloquer même si l'email échoue
         return false;
     }
 }
