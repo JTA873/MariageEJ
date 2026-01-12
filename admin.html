@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration - Confirmations</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -361,6 +363,20 @@
     </div>
 
     <script>
+        // Configuration Firebase (même que dans script.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYhD-tfHQbL5bfWD7oTk3ODekSmfn5tf0",
+            authDomain: "mariageej-22128.firebaseapp.com",
+            projectId: "mariageej-22128",
+            storageBucket: "mariageej-22128.firebasestorage.app",
+            messagingSenderId: "951226680398",
+            appId: "1:951226680398:web:85da933639c50066fe6f1f"
+        };
+
+        // Initialiser Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         let confirmations = [];
         let currentDeleteId = null;
 
@@ -369,23 +385,40 @@
             loadData();
         });
 
-        // Charger les données
+        // Charger les données depuis Firebase
         async function loadData() {
             try {
-                // Simuler un appel Firebase ou récupérer depuis localStorage
+                console.log('Chargement des confirmations depuis Firebase...');
+                
+                // Essayer de charger depuis Firebase
+                const snapshot = await db.collection('confirmations').orderBy('timestamp', 'desc').get();
+                
+                confirmations = [];
+                snapshot.forEach(doc => {
+                    confirmations.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                console.log(`✅ ${confirmations.length} confirmation(s) chargée(s) depuis Firebase`);
+                
+                updateStats();
+                renderTable();
+            } catch (error) {
+                console.error('Erreur Firebase, fallback vers localStorage:', error);
+                
+                // Fallback vers localStorage si Firebase échoue
                 const stored = localStorage.getItem('confirmations');
                 if (stored) {
                     confirmations = JSON.parse(stored);
+                    console.log(`📦 ${confirmations.length} confirmation(s) chargée(s) depuis localStorage`);
                 } else {
                     confirmations = [];
                 }
                 
                 updateStats();
                 renderTable();
-            } catch (error) {
-                console.error('Erreur lors du chargement:', error);
-                document.getElementById('tableContent').innerHTML = 
-                    '<div class="empty-state"><p>Erreur lors du chargement des données</p></div>';
             }
         }
 
@@ -551,7 +584,16 @@
         }
 
         // Supprimer une confirmation
-        function deleteConfirmation(id) {
+        async function deleteConfirmation(id) {
+            try {
+                // Supprimer de Firebase
+                await db.collection('confirmations').doc(id).delete();
+                console.log('✅ Confirmation supprimée de Firebase');
+            } catch (error) {
+                console.error('Erreur Firebase lors de la suppression:', error);
+            }
+            
+            // Supprimer du tableau local et localStorage
             confirmations = confirmations.filter(conf => conf.id !== id);
             localStorage.setItem('confirmations', JSON.stringify(confirmations));
             loadData();

@@ -1,15 +1,22 @@
-// Configuration Firebase
+// ============================================
+// CONFIGURATION FIREBASE
+// ============================================
+// ✅ Firebase est maintenant configuré avec votre projet
+
 const firebaseConfig = {
-    // Remplacez ces valeurs par votre configuration Firebase
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBYhD-tfHQbL5bfWD7oTk3ODekSmfn5tf0",
+    authDomain: "mariageej-22128.firebaseapp.com",
+    projectId: "mariageej-22128",
+    storageBucket: "mariageej-22128.firebasestorage.app",
+    messagingSenderId: "951226680398",
+    appId: "1:951226680398:web:85da933639c50066fe6f1f"
 };
 
-// Configuration EmailJS
+// ============================================
+// CONFIGURATION EMAILJS
+// ============================================
+// ✅ EmailJS est déjà configuré et fonctionnel
+
 const emailJSConfig = {
     publicKey: "JhmDqKBuu5Fng9IuS",  // Clé publique de votre compte EmailJS
     serviceID: "service_elkot5q",          // ID du service email (Gmail, etc.)
@@ -21,12 +28,15 @@ if (typeof emailjs !== 'undefined') {
     emailjs.init(emailJSConfig.publicKey);
 }
 
-// Initialize Firebase (décommentez quand vous aurez votre config)
-// firebase.initializeApp(firebaseConfig);
-// const db = firebase.firestore();
+// ============================================
+// INITIALISATION FIREBASE
+// ============================================
+// ✅ Firebase est maintenant activé !
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 // Variables globales
-let confirmations = []; // Pour stockage local si pas de Firebase
+let confirmations = []; // Fallback pour stockage local si Firebase échoue
 
 // DOM Elements
 const confirmBtn = document.getElementById('confirmBtn');
