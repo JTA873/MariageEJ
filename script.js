@@ -259,7 +259,7 @@ async function sendEmailNotification(data) {
         
         // Préparer les paramètres de l'email
         const emailParams = {
-            to_email: "jadetaraf@hotmail.fr",
+            to_email: "elbaylacq@gmail.com",
             from_name: `${data.prenom} ${data.nom}`,
             confirmation_date: new Date(data.dateConfirmation).toLocaleString('fr-FR'),
             nb_invites: data.nbInvites,
@@ -439,4 +439,5 @@ window.DebugFunctions = {
         localStorage.removeItem('confirmations');
         console.log('Toutes les données ont été supprimées');
     }
+
 };
