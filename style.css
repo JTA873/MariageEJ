@@ -563,6 +563,18 @@ form {
     font-weight: 500;
     border-bottom: 1px solid #e9ecef;
     padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-emoji {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.address-emoji {
+    margin-right: 5px;
 }
 
 /* Programme */
@@ -673,15 +685,8 @@ form {
 .hotel-group li {
     margin-bottom: 8px;
     color: #495057;
-    padding-left: 15px;
+    padding-left: 0;
     position: relative;
-}
-
-.hotel-group li:before {
-    content: '🏨';
-    position: absolute;
-    left: 0;
-    top: 0;
 }
 
 .hotel-link {
