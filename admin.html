@@ -210,6 +210,87 @@
             box-shadow: none;
         }
 
+        .edit-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        .edit-btn:hover {
+            background: #0056b3;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .save-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        .save-btn:hover {
+            background: #1e7e34;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        .cancel-btn:hover {
+            background: #545b62;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .editable-field {
+            border: 1px solid #ddd;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: white;
+            font-family: inherit;
+            width: 100%;
+            min-width: 80px;
+        }
+
+        .editable-field:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+
+        .editable-guests {
+            min-width: 150px;
+            resize: vertical;
+        }
+
+        .editable-message {
+            min-width: 120px;
+            resize: vertical;
+        }
+
+        .editing-row {
+            background-color: #f8f9fa !important;
+        }
+
         .empty-state {
             text-align: center;
             padding: 50px;
@@ -428,9 +509,24 @@
             const todayCount = confirmations.filter(conf => 
                 new Date(conf.dateConfirmation).toDateString() === today
             ).length;
-            const totalGuests = confirmations.reduce((sum, conf) => sum + conf.nbInvites, 0);
+            
+            // Calculer le total des invités en s'assurant que nbInvites est un nombre
+            const totalGuests = confirmations.reduce((sum, conf) => {
+                const nbInvites = parseInt(conf.nbInvites) || 0;
+                return sum + nbInvites;
+            }, 0);
+            
+            // Vérification supplémentaire pour s'assurer que les compteurs sont corrects
+            const totalConfirmationsCount = confirmations.length;
+            
+            console.log('Statistiques mises à jour:', {
+                totalConfirmations: totalConfirmationsCount,
+                totalGuests: totalGuests,
+                todayCount: todayCount,
+                confirmationsData: confirmations.map(c => ({ id: c.id, nbInvites: c.nbInvites }))
+            });
 
-            document.getElementById('totalConfirmations').textContent = confirmations.length;
+            document.getElementById('totalConfirmations').textContent = totalConfirmationsCount;
             document.getElementById('totalGuests').textContent = totalGuests;
             document.getElementById('todayConfirmations').textContent = todayCount;
         }
@@ -468,21 +564,24 @@
                         </thead>
                         <tbody>
                             ${sortedConfirmations.map(conf => `
-                                <tr>
+                                <tr id="row-${conf.id}">
                                     <td class="date-cell">
                                         ${new Date(conf.dateConfirmation).toLocaleDateString('fr-FR')}<br>
                                         <small>${new Date(conf.dateConfirmation).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</small>
                                     </td>
-                                    <td><strong>${conf.nom}</strong></td>
-                                    <td>${conf.prenom}</td>
-                                    <td style="text-align: center;">${conf.nbInvites}</td>
-                                    <td class="guest-list" title="${conf.invites.map(inv => inv.prenom + ' ' + inv.nom).join(', ')}">
+                                    <td id="nom-${conf.id}"><strong>${conf.nom}</strong></td>
+                                    <td id="prenom-${conf.id}">${conf.prenom}</td>
+                                    <td id="nbInvites-${conf.id}" style="text-align: center;">${conf.nbInvites}</td>
+                                    <td id="invites-${conf.id}" class="guest-list" title="${conf.invites.map(inv => inv.prenom + ' ' + inv.nom).join(', ')}">
                                         ${conf.invites.map(inv => inv.prenom + ' ' + inv.nom).join(', ')}
                                     </td>
-                                    <td class="message-cell" title="${conf.message || ''}">
+                                    <td id="message-${conf.id}" class="message-cell" title="${conf.message || ''}">
                                         ${conf.message || '<em>Aucun message</em>'}
                                     </td>
                                     <td>
+                                        <button class="edit-btn" onclick="editConfirmation('${conf.id}')">
+                                            ✏️
+                                        </button>
                                         <button class="delete-btn" onclick="confirmDelete('${conf.id}', '${conf.prenom} ${conf.nom}')">
                                             🗑️
                                         </button>
@@ -497,12 +596,167 @@
             tableContent.innerHTML = tableHTML;
         }
 
+        // Variables pour l'édition
+        let editingId = null;
+        let originalData = {};
+
         // Actualiser les données
         function refreshData() {
             document.getElementById('tableContent').innerHTML = '<div class="loading"></div>';
             setTimeout(() => {
                 loadData();
             }, 500);
+        }
+
+        // Modifier une confirmation
+        function editConfirmation(id) {
+            if (editingId && editingId !== id) {
+                // Annuler l'édition précédente
+                cancelEdit();
+            }
+
+            editingId = id;
+            const conf = confirmations.find(c => c.id === id);
+            if (!conf) return;
+
+            // Sauvegarder les données originales
+            originalData = { ...conf };
+
+            const row = document.getElementById(`row-${id}`);
+            row.classList.add('editing-row');
+
+            // Remplacer les cellules par des champs éditables
+            document.getElementById(`nom-${id}`).innerHTML = 
+                `<input type="text" class="editable-field" value="${conf.nom}" id="edit-nom-${id}">`;
+            
+            document.getElementById(`prenom-${id}`).innerHTML = 
+                `<input type="text" class="editable-field" value="${conf.prenom}" id="edit-prenom-${id}">`;
+            
+            document.getElementById(`nbInvites-${id}`).innerHTML = 
+                `<input type="number" class="editable-field" value="${conf.nbInvites}" min="1" max="10" id="edit-nbInvites-${id}" onchange="updateGuestsCount('${id}')">` ;
+            
+            const guestsText = conf.invites.map(inv => `${inv.prenom} ${inv.nom}`).join('\n');
+            document.getElementById(`invites-${id}`).innerHTML = 
+                `<textarea class="editable-field editable-guests" rows="3" id="edit-invites-${id}">${guestsText}</textarea>`;
+            
+            document.getElementById(`message-${id}`).innerHTML = 
+                `<textarea class="editable-field editable-message" rows="2" id="edit-message-${id}">${conf.message || ''}</textarea>`;
+
+            // Remplacer les boutons d'action
+            const actionsCell = row.querySelector('td:last-child');
+            actionsCell.innerHTML = `
+                <button class="save-btn" onclick="saveEdit('${id}')">
+                    💾
+                </button>
+                <button class="cancel-btn" onclick="cancelEdit()">
+                    ❌
+                </button>
+            `;
+        }
+
+        // Mettre à jour le nombre d'invités quand on change le nombre
+        function updateGuestsCount(id) {
+            const newCount = parseInt(document.getElementById(`edit-nbInvites-${id}`).value);
+            const guestsTextarea = document.getElementById(`edit-invites-${id}`);
+            const currentGuests = guestsTextarea.value.split('\n').filter(g => g.trim());
+            
+            // Ajuster le nombre de lignes si nécessaire
+            if (newCount > currentGuests.length) {
+                // Ajouter des lignes vides
+                const missingCount = newCount - currentGuests.length;
+                for (let i = 0; i < missingCount; i++) {
+                    currentGuests.push('');
+                }
+            } else if (newCount < currentGuests.length) {
+                // Supprimer les lignes en trop
+                currentGuests.splice(newCount);
+            }
+            
+            guestsTextarea.value = currentGuests.join('\n');
+        }
+
+        // Sauvegarder les modifications
+        async function saveEdit(id) {
+            try {
+                const newNom = document.getElementById(`edit-nom-${id}`).value.trim();
+                const newPrenom = document.getElementById(`edit-prenom-${id}`).value.trim();
+                const newNbInvites = parseInt(document.getElementById(`edit-nbInvites-${id}`).value);
+                const newInvitesText = document.getElementById(`edit-invites-${id}`).value.trim();
+                const newMessage = document.getElementById(`edit-message-${id}`).value.trim();
+
+                // Validation
+                if (!newNom || !newPrenom || !newNbInvites || newNbInvites < 1) {
+                    alert('Veuillez remplir tous les champs obligatoires');
+                    return;
+                }
+
+                // Parser les invités
+                const guestLines = newInvitesText.split('\n').map(line => line.trim()).filter(line => line);
+                if (guestLines.length !== newNbInvites) {
+                    alert(`Le nombre d'invités (${newNbInvites}) ne correspond pas au nombre de noms fournis (${guestLines.length})`);
+                    return;
+                }
+
+                const newInvites = guestLines.map((line, index) => {
+                    const parts = line.split(' ');
+                    if (parts.length < 2) {
+                        throw new Error(`Format incorrect pour l'invité: ${line}. Utilisez le format "Prénom Nom"`);
+                    }
+                    const prenom = parts[0];
+                    const nom = parts.slice(1).join(' ');
+                    return {
+                        prenom: prenom,
+                        nom: nom,
+                        principal: index === 0
+                    };
+                });
+
+                // Mettre à jour l'objet confirmation
+                const confIndex = confirmations.findIndex(c => c.id === id);
+                if (confIndex === -1) return;
+
+                const updatedConf = {
+                    ...confirmations[confIndex],
+                    nom: newNom,
+                    prenom: newPrenom,
+                    nbInvites: newNbInvites,
+                    invites: newInvites,
+                    message: newMessage,
+                    lastModified: new Date().toISOString()
+                };
+
+                // Sauvegarder dans Firebase
+                await db.collection('confirmations').doc(id).update(updatedConf);
+                
+                // Mettre à jour le tableau local
+                confirmations[confIndex] = updatedConf;
+                localStorage.setItem('confirmations', JSON.stringify(confirmations));
+
+                // Réinitialiser l'interface
+                editingId = null;
+                originalData = {};
+                
+                // Recharger les données pour mettre à jour l'affichage
+                updateStats();
+                renderTable();
+                
+                alert('Modifications sauvegardées avec succès !');
+                
+            } catch (error) {
+                console.error('Erreur lors de la sauvegarde:', error);
+                alert('Erreur lors de la sauvegarde: ' + error.message);
+            }
+        }
+
+        // Annuler l'édition
+        function cancelEdit() {
+            if (!editingId) return;
+            
+            editingId = null;
+            originalData = {};
+            
+            // Recharger le tableau pour restaurer l'état original
+            renderTable();
         }
 
         // Exporter en CSV
@@ -606,13 +860,27 @@
         }
 
         // Confirmer suppression de toutes les données
-        function confirmClearAll() {
+        async function confirmClearAll() {
             if (confirmations.length === 0) {
                 alert('Aucune donnée à supprimer');
                 return;
             }
             
             if (confirm(`Êtes-vous sûr de vouloir supprimer toutes les ${confirmations.length} confirmations ?\n\nCette action est irréversible.`)) {
+                try {
+                    // Supprimer de Firebase
+                    const batch = db.batch();
+                    confirmations.forEach(conf => {
+                        const docRef = db.collection('confirmations').doc(conf.id);
+                        batch.delete(docRef);
+                    });
+                    await batch.commit();
+                    console.log('✅ Toutes les confirmations supprimées de Firebase');
+                } catch (error) {
+                    console.error('Erreur Firebase lors de la suppression globale:', error);
+                }
+                
+                // Supprimer du stockage local
                 confirmations = [];
                 localStorage.removeItem('confirmations');
                 loadData();
